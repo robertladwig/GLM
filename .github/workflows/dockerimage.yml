@@ -13,5 +13,5 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
     - name: Run the Docker image on test files
-       run: docker run -it -d -v /test:/GLM/test my-image-name:$(date +%s) /bin/bash
-       run: docker exec /ti my-image-name:$(date +%s) /bin/bash /c \"cd test; /GLM/glm\"
+      run: docker run -it -d -v /test:/GLM/test my-image-name:$(date +%s) /bin/bash
+      run: docker exec /ti my-image-name:$(date +%s) /bin/bash /c \"cd test; /GLM/glm\"
