@@ -12,7 +12,7 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	ca-certificates \
 	&& update-ca-certificates
 
-RUN git clone https://github.com/AquaticEcoDynamics/GLM && \
+RUN git clone https://github.com/robertladwig/GLM && \
 	git clone https://github.com/AquaticEcoDynamics/libplot && \
 	git clone https://github.com/AquaticEcoDynamics/libutil && \
 	git clone https://github.com/AquaticEcoDynamics/libaed2
