@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- * glm_output.h                                                               *
+ * glm_balance.h                                                              *
  *                                                                            *
  * Developed by :                                                             *
  *     AquaticEcoDynamics (AED) Group                                         *
@@ -9,7 +9,7 @@
  *                                                                            *
  *     http://aquatic.science.uwa.edu.au/                                     *
  *                                                                            *
- * Copyright 2013 - 2019 -  The University of Western Australia               *
+ * Copyright 2019 -  The University of Western Australia                      *
  *                                                                            *
  *  This file is part of GLM (General Lake Model)                             *
  *                                                                            *
@@ -27,18 +27,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.     *
  *                                                                            *
  ******************************************************************************/
-#ifndef _GLM_OUTPUT_H_
-#define _GLM_OUTPUT_H_
+#ifndef _GLM_BALANCE_H_
+#define _GLM_BALANCE_H_
 
-void init_output(int jstart, const char *out_dir, const char *out_fn,
-                   int MaxLayers, AED_REAL Longitude, AED_REAL Latitude);
-void write_output(int jday, int iclock, int nsave, int stepnum);
-void write_diags(int jday, AED_REAL LakeNum);
-//void write_outflow(int of_idx, int jday, AED_REAL DrawHeight, AED_REAL vol)
-void write_outflow(int of_idx, int jday, AED_REAL DrawHeight,
-                 AED_REAL vol, AED_REAL vol_bc, AED_REAL hwBot, AED_REAL hwTop);
-void close_output(void);
+void mb_add_inflows(AED_REAL vol, AED_REAL *wq_vars);
+void mb_sub_outflows(int layer, AED_REAL subvol);
 
-int intern_is_var(int id, const char *v);
+void open_balance(const char *out_dir, const char *balance_fname,
+              int balance_varnum, const char**balance_vars, const char *timefmt);
+void write_balance(int jday);
+void close_balance(void);
 
 #endif

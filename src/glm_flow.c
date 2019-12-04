@@ -53,6 +53,8 @@
 #include "glm_layers.h"
 #include "glm_output.h"
 
+#include "glm_balance.h"
+
 #include "glm_debug.h"
 
 #define _WQ_VarsTmp(i,j,k)  WQ_VarsTmp[_IDX_3d(Num_WQ_Vars,NumInf,MaxPar,i,j,k)]
@@ -380,6 +382,7 @@ void do_single_outflow(AED_REAL HeightOfOutflow, AED_REAL flow, OutflowDataType 
     for (i = botmLayer; i <= surfLayer; i++){
 //      if (Delta_V[i] > zero) printf("%d DeltaV %8.4f; flow %10.4f;%10.4f %d %d %d %10.1f %10.1f \n",i,Delta_V[i],flow,Q_outf_star,Outflow_LayerNum,iBot,iTop,hBot,hTop);
         if (Delta_V[i] > zero) Lake[i].LayerVol -= Delta_V[i];
+        mb_sub_outflows(i, Delta_V[i]);
     }
 
     /**********************************************************************
@@ -456,12 +459,14 @@ AED_REAL do_outflows(int jday)
         write_outflow(i, jday, DrawHeight, tVolSum-Lake[surfLayer].Vol1, Outflows[i].Draw, hBot, hTop);
     }
     if (seepage) {
-      if (seepage_rate>zero) {
-        // Darcy's Law used, so input rate is hydraulic conductivity (m/day) x hydraulic head
-        SeepDraw = seepage_rate * Lake[surfLayer].Height * Lake[surfLayer].LayerArea * 0.95;
-      } else {
-        // Constant seepage assumed, so input rate is dh (m/day)
-        SeepDraw = -seepage_rate * Lake[surfLayer].LayerArea * 0.95; // 0.95 added since the effective area of seeping is probably a bit less than max area of water innundation???
+        if (seepage_rate>zero) {
+            // Darcy's Law used, so input rate is hydraulic conductivity (m/day) x hydraulic head
+            SeepDraw = seepage_rate * Lake[surfLayer].Height * Lake[surfLayer].LayerArea * 0.95;
+        } else {
+            // Constant seepage assumed, so input rate is dh (m/day)
+            // 0.95 added since the effective area of seeping is probably
+            // a bit less than max area of water innundation???
+            SeepDraw = -seepage_rate * Lake[surfLayer].LayerArea * 0.95;
       }
         do_single_outflow(0., SeepDraw, NULL);
     }
@@ -576,6 +581,8 @@ static int insert_inflow(int k, //#Inflow parcel counter
     for (wqidx = 0; wqidx < Num_WQ_Vars; wqidx++)
         WQ_VarsS[wqidx] = Inflows[iRiver].WQDown[k][wqidx];
 
+    mb_add_inflows(Inflows[iRiver].QDown[k], WQ_VarsS);
+
     Downflow_Depth = Inflows[iRiver].DDown[k];
 
     //# Check if this parcel lies below level of neutral buoyancy.
@@ -663,7 +670,7 @@ static int insert_inflow(int k, //#Inflow parcel counter
         Inflows[iRiver].TDown[k] = Inflow_Temp;
         Inflows[iRiver].SDown[k] = Inflow_Salinity;
         for (wqidx = 0; wqidx < Num_WQ_Vars; wqidx++)
-             Inflows[iRiver].WQDown[k][wqidx] = WQ_VarsS[wqidx];
+            Inflows[iRiver].WQDown[k][wqidx] = WQ_VarsS[wqidx];
 
         Inflows[iRiver].TotIn = Inflows[iRiver].TotIn + Delta_Q;
         Inflows[iRiver].DDown[k] = Downflow_Depth - Inflow_dx * sin(Phi);
@@ -714,8 +721,8 @@ static int insert_inflow(int k, //#Inflow parcel counter
         }
         Layer--;
     }
-    return FALSE;
 
+    return FALSE;
 }
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
