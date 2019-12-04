@@ -33,7 +33,4 @@ WORKDIR ../GLM
 
 RUN FC=gfortran-8 ./build_glm.sh
 
-WORKDIR ..
-
-COPY test .
 
