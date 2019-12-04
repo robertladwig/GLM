@@ -12,5 +12,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-    - name: Run Docker
+    - name: Get Docker
       run: docker pull hydrobert/glm-aed2
+    - name: Run Docker
+      run: docker run hyrobert/glm-aed2
