@@ -4,15 +4,11 @@ on: [push]
 
 jobs:
 
-  R_latest:
-    
-    name: Test on latest
+  build:
+
     runs-on: ubuntu-latest
-    
-    container: hydrobert/glm-aed2
-    
 
     steps:
     - uses: actions/checkout@v1
-    - name: Test
-      run: docker:://hydrobert/glm-aed2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
